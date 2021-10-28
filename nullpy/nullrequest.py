@@ -36,6 +36,8 @@ nullrequest.py - base class for any requests to the service
 import urllib
 import urllib3
 
+http = urllib3.PoolManager()
+
 class NullRequest:
     """nullrequest - base class for requests to the service
     
@@ -46,9 +48,9 @@ class NullRequest:
         request_data (bytes): The message (usually URL or error) returned by 
             the service.
     """
-    http = urllib3.PoolManager()
+    verb = "null"
 
-    def __init__(self, service_url: int = 'http://0x0.st/'):
+    def __init__(self, service_url: str = 'http://0x0.st/'):
         """Class constructor
         
         Arguments: 
@@ -58,13 +60,20 @@ class NullRequest:
         self.request_params: dict = {}
         self.request_data: bytes
     
+    def set_request_params(self, data):
+        """ Sets up the request parameters
+        Arguments:
+            data(str): The parameter to add to the request
+        """
+        self.request_data[self.verb] = data
+    
     def send_request(self):
         """Sends the request out to the service.
         
         Returns:
             The response from the service (usually the URL or an error)
         """
-        request = http.request(
+        request = self.http.request(
             'POST',
             self.service_url,
             fields = self.request_params
