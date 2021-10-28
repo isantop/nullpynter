@@ -65,7 +65,7 @@ class NullRequest:
         Arguments:
             data(str): The parameter to add to the request
         """
-        self.request_data[self.verb] = data
+        self.request_params[self.verb] = data
     
     def send_request(self):
         """Sends the request out to the service.
@@ -73,7 +73,7 @@ class NullRequest:
         Returns:
             The response from the service (usually the URL or an error)
         """
-        request = self.http.request(
+        request = http.request(
             'POST',
             self.service_url,
             fields = self.request_params
