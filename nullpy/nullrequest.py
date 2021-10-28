@@ -40,8 +40,11 @@ class NullRequest:
     """nullrequest - base class for requests to the service
     
     Attributes:
-        service_url(int): The url for the null pointer service to use
+        service_url(int): The url for the null pointer service to use (default:
+            'http://0x0.st/')
         request_params (dict): The fields and values for the formdata to send
+        request_data (bytes): The message (usually URL or error) returned by 
+            the service.
     """
     http = urllib3.PoolManager()
 
@@ -53,6 +56,7 @@ class NullRequest:
         """
         self.service_url: str = service_url
         self.request_params: dict = {}
+        self.request_data: bytes
     
     def send_request(self):
         """Sends the request out to the service.
@@ -65,7 +69,8 @@ class NullRequest:
             self.service_url,
             fields = self.request_params
         )
-        return request.data
+        self.request_data = request.data
+        return self.request_data
     
     @property
     def service_url(self):
