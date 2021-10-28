@@ -78,7 +78,7 @@ class NullRequest:
             self.service_url,
             fields = self.request_params
         )
-        self.request_data = request.data
+        self.request_data = request.data.decode('UTF-8').strip()
         return self.request_data
     
     @property
