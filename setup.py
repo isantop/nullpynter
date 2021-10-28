@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ Nullpy - The Nullpointer Uploader Service Interface
 
 BSD 3-Clause License
@@ -197,7 +198,7 @@ setup(
     download_url='https://github.com/pop-os/nullpy/releases',
     long_description=long_description,
     tests_require=['pytest'],
-    license='LGPLv3',
+    license='BSD',
     packages=['nullpy'],
     cmdclass={'release': Release, 'test': Test},
     scripts=['bin/apt-manage'],
