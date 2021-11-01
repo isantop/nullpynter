@@ -82,6 +82,17 @@ if args.action == 'gui':
     gui.run_app()
     quit()
 
+if args.action == 'clear':
+    from nullpynter.history import NpyHistory
+    history = NpyHistory()
+    if args.url:
+        history.clear(url=args.url)
+        print(f'nullpynter: History for {args.url} cleared')
+        quit()
+    history.clear()
+    print('nullpynter: All history cleared')
+    quit()
+
 if args.item == 'none':
     print('ERROR: You need to specify a file')
     quit(1)
