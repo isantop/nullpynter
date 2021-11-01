@@ -38,7 +38,7 @@ from . import nullrequest
 class Upload(nullrequest.NullRequest):
     """ Class for the URL Shortener"""
 
-    def __init__(self, service_url: str = 'http://0x0.st/'):
+    def __init__(self, service_url: str = 'http://0x0.st'):
         super().__init__(service_url=service_url)
         self.verb = 'file'
 

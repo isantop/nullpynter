@@ -75,11 +75,20 @@ class NpyHistory:
         """
         self._load_histfile()
         try:
-            self.history[url][response] = item
+            self.history[url][item] = response
         except KeyError:
             self.history[url] = {}
-            self.history[url][response] = item
+            self.history[url][item] = response
         self._save_histfile()
+    
+    def find_item_in_history(self, url:str, search:str) -> str:
+        """ Finds an item provided to the service in the history.
+        
+        If it finds the item, it returns the response value.
+        """
+        url_, item, response = self.pop(url, item=search)
+        return response
+
         
     def pop(self, url:str, item:str='', response:str='') -> tuple:
         """ Find a specified item from the history and return it.
@@ -97,22 +106,22 @@ class NpyHistory:
             otherwise ()
         """
         self._load_histfile()
-        if response:
+        r_item:str = ''
+        r_response:str = ''
+        if item:
             try:
-                self._save_histfile()
-                return (url, response, self.history[url].pop(response))
+                r_response = self.history[url].pop(item)
+                r_item = item
             except KeyError:
-                self._save_histfile()
-                return ()
-        
-        try:
+                r_item = ''
+                r_response = ''
+        elif response:
             for key, value in self.history.items():
-                if item == value:
-                    self._save_histfile()
-                    return (url, key, self.history[url].pop(key))
-        except KeyError:
-            self._save_histfile()
-            return ()
+                if response == value:
+                    r_item = key
+                    r_response = self.history[url].pop(r_item)
+        
+        return url, r_item, r_response
     
     def clear(self, url:str = ''):
         """ Clear all of the history from the file."""

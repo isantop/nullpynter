@@ -45,14 +45,14 @@ class NullRequest:
     
     Attributes:
         service_url(int): The url for the null pointer service to use (default:
-            'http://0x0.st/')
+            'http://0x0.st')
         request_params (dict): The fields and values for the formdata to send
         request_data (bytes): The message (usually URL or error) returned by 
             the service.
     """
     verb = "null"
 
-    def __init__(self, service_url: str = 'http://0x0.st/'):
+    def __init__(self, service_url: str = 'http://0x0.st'):
         """Class constructor
         
         Arguments: 
@@ -78,9 +78,9 @@ class NullRequest:
         Returns:
             The response from the service (usually the URL or an error)
         """
-        item_in_history = self.history.pop(self.service_url, item=self.item)
+        item_in_history = self.history.find_item_in_history(self.item)
         if item_in_history:
-            self.request_data = item_in_history[1]
+            self.request_data = item_in_history
         else:
             request = http.request(
                 'POST',
@@ -88,7 +88,7 @@ class NullRequest:
                 fields = self.request_params
             )
             self.request_data = request.data.decode('UTF-8').strip()
-            
+
         if self.request_data.startswith('http'):
             item = self.item
             url = self.service_url
