@@ -30,71 +30,64 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-import urllib3
-
+import time
 from threading import Thread
-from gi.repository import GLib, Gtk, Pango
+from gi.repository import GLib
 
-
-http = urllib3.PoolManager()
-
-class Headerbar(Gtk.HeaderBar):
-    """Application headerbar"""
-
-    def __init__(self, url:str = "http://0x0.st", pool=None) -> None:
-        self.http = pool
-
-        super().__init__()
-        self.url = url
-        self.info:str = 'Fetching info from service...'
-
-        info_button = Gtk.ToggleButton.new()
-        info_button.set_icon_name('dialog-information-symbolic')
-        info_button.connect('toggled', self.show_hide_popover)
-
-        # self.pack_end(info_button)
-        self.action_button = Gtk.Button.new_with_label('Upload')
-        self.action_button.props.width_request = 85
-        Gtk.StyleContext.add_class(
-            self.action_button.get_style_context(),
-            'suggested-action'
-        )
-        self.pack_end(self.action_button)
-
-        self.info_popover = Gtk.Popover.new()
-
-        info_scroller = Gtk.ScrolledWindow()
-        self.info_popover.set_child(info_scroller)
-
-        self.info_label = Gtk.Label.new(self.info)
-        self.info_label.set_wrap(True)
-        self.info_label.set_wrap_mode(Pango.WrapMode.WORD_CHAR)
-        info_scroller.set_child(self.info_label)
-        # self.info_popover.show()
-        # self.update_info()
-
-    def update_info(self):
-        """Update the text in the info_label"""
-        info_thread = InfoThread(self.url, self.info_label)
-    
-    def show_hide_popover(self, widget, data=None):
-        print('showing/hiding popover')
-        if widget.get_active():
-            self.info_popover.popup()
-        else:
-            self.info_popover.popdown()
+from .enums import Action
+from ..remote import Remote
+from ..shorten import Shorten
+from ..upload import Upload
 
 class InfoThread(Thread):
 
-    def __init__(self, url, widget):
+    def __init__(self, url, widget, pool):
         super().__init__()
         self.url = url
         self.wigdet = widget
+        self.http = pool
 
     def run(self):
-        icon_request = http.request(
+        icon_request = self.http.request(
             'GET',
             self.url
         )
         icon_text = icon_request.data.decode('UTF-8').strip()
         GLib.idle_add(self.wigdet.set_markup, icon_text)
+
+class ServiceThread(Thread):
+    
+    def __init__(self, widget):
+        super().__init__()
+        self.wigdet = widget
+        self.http = widget.http
+    
+    def run(self):
+        action_map = {
+            Action.UPLOAD: self.upload,
+            Action.REMOTE: self.remote,
+            Action.SHORTEN: self.shorten
+        }
+        item_text = self.wigdet.item_entry.get_text()
+        service_url = self.wigdet.url_entry.get_text()
+        service_action = self.wigdet.action.value
+        print(f'Sending {item_text} to {service_url} for {self.wigdet.action}')
+        
+        response = action_map[self.wigdet.action](item_text, service_url)
+
+        GLib.idle_add(self.wigdet.response_entry.set_text, response)
+        GLib.idle_add(self.wigdet.set_sensitive, True)
+        GLib.idle_add(self.wigdet.busy_spinner.stop)
+    
+    def shorten(self, item, url):
+        short = Shorten(service_url=url)
+        short.set_request_params(item)
+        return short.send_request()
+        
+    def remote(self, item, url):
+        rem = Remote(service_url=url)
+        rem.set_request_params(item)
+        return rem.send_request()
+        
+    def upload(self, item, url):
+        return 'Not Implemented!'

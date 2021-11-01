@@ -29,33 +29,16 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-gui - The application gui
 """
-import urllib3
-import gi
 
-from .window import NpyWindow
+from enum import Enum
 
-http = urllib3.PoolManager()
+class Action(Enum):
+    UPLOAD = 'Upload'
+    REMOTE = 'Remote'
+    SHORTEN = 'Shorten'
 
-gi.require_versions(
-    {
-        'Gtk': '4.0',
-        'GLib': '2.0',
-        'Pango': '1.0',
-    }
-)
-
-from gi.repository import GLib, Gtk
-GLib.threads_init()
-
-def on_activate(app):
-    window = NpyWindow(application=app, pool=http)
-    window.present()
-    
-app = Gtk.Application(application_id='ro.santopiet.nullpynter')
-app.connect('activate', on_activate)
-
-def run_app():
-    app.run(None)
+    def label(self):
+        if self.value == 'Remote':
+            return 'Upload'
+        return self.value
