@@ -3,3 +3,6 @@
 name = "cz_conventional_commits"
 version = "0.1.0"
 tag_format = "$version"
+version_files = [
+    'nullpynter/__version__.py:__version__'
+]
