@@ -1,4 +1,4 @@
-""" Nullpy - The Nullpointer Uploader Service Interface
+""" Nullpynter - The Nullpointer Uploader Service Interface
 
 BSD 3-Clause License
 
@@ -29,15 +29,27 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-shorten - class for the URL Shortener
 """
+import gi
+gi.require_versions(
+    {
+        'Gtk': '4.0',
+        'GLib': '2.0',
+        'Pango': '1.0',
+    }
+)
 
-from . import nullrequest
+from gi.repository import Gtk
 
-class Shorten(nullrequest.NullRequest):
-   """ Class for the URL Shortener"""
+from .headerbar import Headerbar
 
-   def __init__(self, service_url: str = 'http://0x0.st/'):
-       super().__init__(service_url=service_url)
-       self.verb = 'shorten'
+class NpyWindow(Gtk.ApplicationWindow):
+    """Main Window"""
+
+    def __init__(self, application) -> None:
+        super().__init__(application=application)
+        self.set_title('Nullpynter')
+
+        self.headerbar = Headerbar()
+        self.set_titlebar(self.headerbar)
+

@@ -1,4 +1,4 @@
-""" Nullpy - The Nullpointer Uploader Service Interface
+""" Nullpynter - The Nullpointer Uploader Service Interface
 
 BSD 3-Clause License
 
@@ -29,6 +29,15 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+shorten - class for the URL Shortener
 """
 
-__version__ = '0.0.1'
+from . import nullrequest
+
+class Shorten(nullrequest.NullRequest):
+   """ Class for the URL Shortener"""
+
+   def __init__(self, service_url: str = 'http://0x0.st/'):
+       super().__init__(service_url=service_url)
+       self.verb = 'shorten'

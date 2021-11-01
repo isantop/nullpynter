@@ -1,4 +1,4 @@
-""" Nullpy - The Nullpointer Uploader Service Interface
+""" Nullpynter - The Nullpointer Uploader Service Interface
 
 BSD 3-Clause License
 
@@ -30,28 +30,14 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-upload - class for the file uploader
+remote - Class for the remote URL uploader
 """
 
 from . import nullrequest
 
-class Upload(nullrequest.NullRequest):
-    """ Class for the URL Shortener"""
+class Remote(nullrequest.NullRequest):
+   """ Class for the URL Shortener"""
 
-    def __init__(self, service_url: str = 'http://0x0.st/'):
-        super().__init__(service_url=service_url)
-        self.verb = 'file'
-
-    def set_request_params(self, data):
-        """ Sets up the request parameters
-        
-        We need to turn this into file data before we set up the request
-
-        Arguments:
-            data(str): The filename to upload
-        """
-        with open(data, mode='rb') as upload_file:
-            file_data = upload_file.read()
-        
-        request_param = (data, file_data)
-        return super().set_request_params(request_param)
+   def __init__(self, service_url: str = 'http://0x0.st/'):
+       super().__init__(service_url=service_url)
+       self.verb = 'url'

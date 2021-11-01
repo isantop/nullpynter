@@ -1,4 +1,5 @@
-""" Nullpy - The Nullpointer Uploader Service Interface
+#!/usr/bin/env python3
+""" Nullpynter - The Nullpointer Uploader Service Interface
 
 BSD 3-Clause License
 
@@ -29,5 +30,66 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+main executable
 """
 
+import argparse
+import logging
+
+import nullpynter
+
+actions = {
+    'upload': nullpynter.Upload,
+    'remote': nullpynter.Remote,
+    'shorten': nullpynter.Shorten
+}
+
+parser = argparse.ArgumentParser(
+    prog='npy',
+    description='Simple Interface for the Null Pointer service'
+)
+
+parser.add_argument(
+    'action',
+    nargs='?',
+    default='gui',
+    help=(
+        'The action to take. One of upload, remote, or shorten'
+    )
+)
+
+parser.add_argument(
+    'item',
+    nargs='?',
+    default='none',
+    help=(
+        'The item (filename or URL) to upload/shorten'
+    )
+)
+parser.add_argument(
+    '-u',
+    '--url',
+    help=(
+        'The URL of the service to use (Default is http://0x0.st)'
+    )
+)
+
+args = parser.parse_args()
+
+if args.action == 'gui':
+    import nullpynter.gui as gui
+    gui.run_app()
+    quit()
+
+if args.item == 'none':
+    print('ERROR: You need to specify a file')
+    quit(1)
+action = actions[args.action]()
+if args.url:
+    action.service_url = args.url
+
+action.set_request_params(args.item)
+response = action.send_request()
+
+print(response)

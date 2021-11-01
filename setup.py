@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" Nullpy - The Nullpointer Uploader Service Interface
+""" Nullpynter - The Nullpointer Uploader Service Interface
 
 BSD 3-Clause License
 
@@ -39,7 +39,7 @@ import os
 import subprocess
 from setuptools import setup, find_packages, Command
 
-NAME = "nullpy"
+NAME = "nullpynter"
 
 def get_version():
     """ Get the program version. """
@@ -195,12 +195,12 @@ setup(
     author_email='ian@system76.com',
     url='https://github.com/pop-os/nullpy',
     description='Simple Command-line and GTK Interface for the Nullpointer file bucket and URL Shortener Service',
-    download_url='https://github.com/pop-os/nullpy/releases',
+    download_url='https://github.com/isantop/nullpy/releases',
     long_description=long_description,
     tests_require=['pytest'],
     license='BSD',
-    packages=['nullpy'],
+    packages=['nullpynter', 'nullpynter/gui'],
     cmdclass={'release': Release, 'test': Test},
-    scripts=['bin/apt-manage'],
+    scripts=['bin/npy'],
     data_files=[]
 )

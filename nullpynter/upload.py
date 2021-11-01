@@ -1,4 +1,4 @@
-""" Nullpy - The Nullpointer Uploader Service Interface
+""" Nullpynter - The Nullpointer Uploader Service Interface
 
 BSD 3-Clause License
 
@@ -30,63 +30,28 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-nullrequest.py - base class for any requests to the service
+upload - class for the file uploader
 """
 
-import urllib
-import urllib3
+from . import nullrequest
 
-http = urllib3.PoolManager()
-
-class NullRequest:
-    """nullrequest - base class for requests to the service
-    
-    Attributes:
-        service_url(int): The url for the null pointer service to use (default:
-            'http://0x0.st/')
-        request_params (dict): The fields and values for the formdata to send
-        request_data (bytes): The message (usually URL or error) returned by 
-            the service.
-    """
-    verb = "null"
+class Upload(nullrequest.NullRequest):
+    """ Class for the URL Shortener"""
 
     def __init__(self, service_url: str = 'http://0x0.st/'):
-        """Class constructor
-        
-        Arguments: 
-            service_url(int): The URL for the nullpointer service to use. 
-        """
-        self.service_url: str = service_url
-        self.request_params: dict = {}
-        self.request_data: bytes
-    
+        super().__init__(service_url=service_url)
+        self.verb = 'file'
+
     def set_request_params(self, data):
         """ Sets up the request parameters
-        Arguments:
-            data(str): The parameter to add to the request
-        """
-        self.request_params[self.verb] = data
-    
-    def send_request(self):
-        """Sends the request out to the service.
         
-        Returns:
-            The response from the service (usually the URL or an error)
+        We need to turn this into file data before we set up the request
+
+        Arguments:
+            data(str): The filename to upload
         """
-        request = http.request(
-            'POST',
-            self.service_url,
-            fields = self.request_params
-        )
-        self.request_data = request.data.decode('UTF-8').strip()
-        return self.request_data
-    
-    @property
-    def service_url(self):
-        """int: the URL for the service to use."""
-        return self._service_url
-    
-    @service_url.setter
-    def service_url(self, url):
-        """Sets the service_url. Must be a nullpointer service URL"""
-        self._service_url = url
+        with open(data, mode='rb') as upload_file:
+            file_data = upload_file.read()
+        
+        request_param = (data, file_data)
+        return super().set_request_params(request_param)
