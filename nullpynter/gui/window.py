@@ -98,6 +98,7 @@ class NpyWindow(Gtk.ApplicationWindow):
         entry_box.append(self.item_entry)
 
         self.chooser_button = Gtk.Button.new_with_label('Browse')
+        self.chooser_button.connect('clicked', self.file_select_click)
         entry_box.append(self.chooser_button)
 
         url_label = Gtk.Label.new('Service URL')
@@ -175,3 +176,24 @@ class NpyWindow(Gtk.ApplicationWindow):
         self.busy_spinner.start()
         service = ServiceThread(self)
         service.start()
+    
+    def file_select_click(self, widget, data=None):
+        dialog = Gtk.FileChooserDialog(
+            title="Select a file", 
+            parent=self, 
+            action=Gtk.FileChooserAction.OPEN
+        )
+        dialog.add_buttons(
+            'Cancel',
+            Gtk.ResponseType.CANCEL,
+            'Select',
+            Gtk.ResponseType.OK,
+        )
+        # dialog.get_widget_for_response(Gtk.ResponseType.OK).connect()
+        dialog.connect('response', self.dialog_button_clicked)
+        dialog.show()
+    
+    def dialog_button_clicked(self, widget, data=None):
+        filename = widget.get_file().get_path()
+        self.item_entry.set_text(filename)
+        widget.destroy()

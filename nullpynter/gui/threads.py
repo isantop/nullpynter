@@ -90,4 +90,7 @@ class ServiceThread(Thread):
         return rem.send_request()
         
     def upload(self, item, url):
-        return 'Not Implemented!'
+        upl = Upload(service_url=url)
+        upl.set_request_params(item)
+        return upl.send_request()
+        

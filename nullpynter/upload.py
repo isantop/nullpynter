@@ -54,4 +54,5 @@ class Upload(nullrequest.NullRequest):
             file_data = upload_file.read()
         
         request_param = (data, file_data)
-        return super().set_request_params(request_param)
+        super().set_request_params(request_param)
+        self.item = data

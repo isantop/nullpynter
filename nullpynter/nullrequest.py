@@ -38,6 +38,8 @@ import urllib3
 
 http = urllib3.PoolManager()
 
+from .history import NpyHistory
+
 class NullRequest:
     """nullrequest - base class for requests to the service
     
@@ -58,13 +60,16 @@ class NullRequest:
         """
         self.service_url: str = service_url
         self.request_params: dict = {}
-        self.request_data: bytes
+        self.request_data: str
+        self.item: str
+        self.history = NpyHistory()
     
     def set_request_params(self, data):
         """ Sets up the request parameters
         Arguments:
             data(str): The parameter to add to the request
         """
+        self.item = data
         self.request_params[self.verb] = data
     
     def send_request(self):
@@ -73,12 +78,23 @@ class NullRequest:
         Returns:
             The response from the service (usually the URL or an error)
         """
-        request = http.request(
-            'POST',
-            self.service_url,
-            fields = self.request_params
-        )
-        self.request_data = request.data.decode('UTF-8').strip()
+        item_in_history = self.history.pop(self.service_url, item=self.item)
+        if item_in_history:
+            self.request_data = item_in_history[1]
+        else:
+            request = http.request(
+                'POST',
+                self.service_url,
+                fields = self.request_params
+            )
+            self.request_data = request.data.decode('UTF-8').strip()
+            
+        if self.request_data.startswith('http'):
+            item = self.item
+            url = self.service_url
+            response = self.request_data
+            print((item, url, response))
+            self.history.append(item, url, response)
         return self.request_data
     
     @property
